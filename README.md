@@ -12,5 +12,4 @@ NOTE: ``docker-compose build`` will take 10-15 minutes for the first time. It do
 ### Stop server
     docker-compose down
 
-## Microservice Architecture
-![microservice](/images/microservice.png)
+
