@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mysql-order
+  name: mysql-order
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-order
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql-order
+    spec:
+      containers:
+        - args:
+            - --default-authentication-plugin=mysql_native_password
+          env:
+            - name: MYSQL_DATABASE
+              value: jpetstore
+            - name: MYSQL_PASSWORD
+              value: test
+            - name: MYSQL_ROOT_PASSWORD
+              value: test
+          image: mysql:8.0
+          name: mysql-order
+          ports:
+            - containerPort: 3306
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-order-claim0
+      restartPolicy: Always
+      volumes:
+        - name: mysql-order-claim0
+          persistentVolumeClaim:
+            claimName: mysql-order-claim0
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mysql-order
+  name: mysql-order
+spec:
+  ports:
+    - name: "3313"
+      nodePort: 30474
+      port: 3313
+      targetPort: 3306
+  selector:
+    app: mysql-order
+  type: NodePort

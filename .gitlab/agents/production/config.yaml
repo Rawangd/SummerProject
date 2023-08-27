@@ -1,0 +1,6 @@
+ci_access:
+  projects:
+    - id: rawan.ghoudi/jpetstore
+  groups:
+    - id: rawan.ghoudi
+

@@ -1,0 +1,33 @@
+image: docker/compose:latest
+
+services:
+- name: docker:dind
+  alias: thedockerhost
+
+stages:
+- build
+- production
+
+variables:
+  DOCKER_DRIVER: overlay2
+  SPRING_PROFILES_ACTIVE: test
+  DOCKER_TLS_CERTDIR: ''
+  DOCKER_COMPOSE_VERSION: 1.29.2
+  
+
+.kube-context:
+  before_script:
+  - if [ -n "$STG_CONTEXT" ]; then kubectl config use-context "$STG_CONTEXT"; fi
+
+.prod-context:
+  before_script:
+  - if [ -n "$PROD_CONTEXT" ]; then kubectl config use-context "$PROD_CONTEXT"; fi
+
+
+build-frontend:
+  stage: build
+  script:
+     - docker login -u $USER -p $MDP 
+     - cd microservice/frontend
+     - docker build -t rawan99/frontend .
+     - docker push rawan99/frontend:latest

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: api-catalog
+  name: api-catalog  # Updated Deployment name
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-catalog  # Updated selector label
+  template:
+    metadata:
+      labels:
+        app: api-catalog  # Updated labels
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTS
+          value: "-Xmx150m"
+        image: rawan99/api-catalog:latest
+        name: api-catalog
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: Always
+        
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: api-catalog
+  name: api-catalog
+spec:
+  ports:
+    - name: "8082"
+      protocol: TCP
+      nodePort: 31690
+      port: 8082
+      targetPort: 8080
+  selector:
+    app: api-catalog
+  type: NodePort
+
+

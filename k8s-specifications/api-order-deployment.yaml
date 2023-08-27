@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: api-order
+  name: api-order
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-order
+  template:
+    metadata:
+      labels:
+        app: api-order
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTS
+          value: "-Xmx150m"
+        image: rawan99/api-order:latest
+        name: api-order
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: Always
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: api-order
+  name: api-order
+spec:
+  ports:
+    - name: "8083"
+      protocol: TCP
+      nodePort: 31691
+      port: 8083
+      targetPort: 8080
+  selector:
+    app: api-order
+  type: NodePort
+

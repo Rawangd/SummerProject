@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mysql-catalog
+  name: mysql-catalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-catalog
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql-catalog
+    spec:
+      containers:
+        - args:
+            - --default-authentication-plugin=mysql_native_password
+          env:
+            - name: MYSQL_DATABASE
+              value: jpetstore
+            - name: MYSQL_PASSWORD
+              value: test
+            - name: MYSQL_ROOT_PASSWORD
+              value: test
+          image: mysql:8.0
+          name: mysql-catalog
+          ports:
+            - containerPort: 3306
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-catalog-claim0
+      restartPolicy: Always
+      volumes:
+        - name: mysql-catalog-claim0
+          persistentVolumeClaim:
+            claimName: mysql-catalog-claim0
+        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mysql-catalog
+  name: mysql-catalog
+spec:
+  ports:
+    - name: mysql
+      nodePort: 30475
+      port: 3312
+      targetPort: 3306
+  selector:
+    app: mysql-account
+  type: NodePort
+
+
